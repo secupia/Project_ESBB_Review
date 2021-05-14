@@ -1,0 +1,5 @@
+key.c:28:13:KeyBufIn.constprop	8	static
+key.c:41:6:KeyHit	0	static
+key.c:50:9:KeyGetKey	0	static
+key.c:72:6:KeyInit	0	static
+key.c:80:6:KeyScanTask	8	static

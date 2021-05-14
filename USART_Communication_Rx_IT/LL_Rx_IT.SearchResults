@@ -1,0 +1,17 @@
+---- USARTx_IRQHandler Matches (4 in 3 files) ----
+main.h (Inc):78
+#define USARTx_IRQHandler             USART1_IRQHandler
+
+#define USARTx_GPIO_CLK_ENABLE()      LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA)   /* Enable the peripheral clock of GPIOA */
+main.h (Inc):95
+#define USARTx_IRQHandler             USART2_IRQHandler
+
+#define USARTx_GPIO_CLK_ENABLE()      LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOA)   /* Enable the peripheral clock of GPIOA */
+stm32f1xx_it.c (Src):190
+void USARTx_IRQHandler(void)
+{
+  /* Check RXNE flag value in SR register */
+stm32f1xx_it.h (Inc):64
+void USARTx_IRQHandler(void);
+
+#ifdef __cplusplus

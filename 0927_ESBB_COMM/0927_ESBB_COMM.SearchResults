@@ -1,0 +1,33 @@
+---- pRxBuffPtr Matches (8 in 2 files) ----
+stm32f1xx_hal_uart.c (Drivers\...\Src):867
+    huart->pRxBuffPtr = pData;
+    huart->RxXferSize = Size;
+    huart->RxXferCount = Size;
+stm32f1xx_hal_uart.c (Drivers\...\Src):982
+    huart->pRxBuffPtr = pData;
+    huart->RxXferSize = Size;
+
+stm32f1xx_hal_uart.c (Drivers\...\Src):2411
+      tmp = (uint16_t*) huart->pRxBuffPtr;
+      if(huart->Init.Parity == UART_PARITY_NONE)
+      {
+stm32f1xx_hal_uart.c (Drivers\...\Src):2415
+        huart->pRxBuffPtr += 2U;
+      }
+      else
+stm32f1xx_hal_uart.c (Drivers\...\Src):2420
+        huart->pRxBuffPtr += 1U;
+      }
+    }
+stm32f1xx_hal_uart.c (Drivers\...\Src):2427
+        *huart->pRxBuffPtr++ = (uint8_t)(huart->Instance->DR & (uint8_t)0x00FF);
+      }
+      else
+stm32f1xx_hal_uart.c (Drivers\...\Src):2431
+        *huart->pRxBuffPtr++ = (uint8_t)(huart->Instance->DR & (uint8_t)0x007F);
+      }
+    }
+stm32f1xx_hal_uart.h (Drivers\...\Inc):169
+  uint8_t                       *pRxBuffPtr;      /*!< Pointer to UART Rx transfer Buffer */
+
+  uint16_t                      RxXferSize;       /*!< UART Rx Transfer size              */
