@@ -13,6 +13,26 @@
 #define KEY_STATE_RPT_START_DLY    3
 #define KEY_STATE_RPT_DLY          4
 
+
+
+#if 0
+typedef struct    /* Using struct by global variables */
+{
+    uint8_t Buf[KEY_BUF_SIZE];
+    uint8_t BufInIx;
+    uint8_t BufOutIx;
+    uint8_t NRead;
+
+    uint8_t RptStartDlyCtr;
+    uint8_t RptDlyCtr;
+
+    uint8_t ScanState;
+} KEY;
+
+static KEY Key;
+#endif
+
+#if 0
 static uint8_t KeyBuf[KEY_BUF_SIZE];
 static uint8_t KeyBufInIx;
 static uint8_t KeyBufOutIx;
@@ -22,12 +42,16 @@ static uint8_t KeyRptStartDlyCtr;
 static uint8_t KeyRptDlyCtr;
 
 static uint8_t KeyScanState;
+#endif
 
 static void KeySelRow(uint8_t row);
 static uint8_t KeyGetCol(void);
 static bool KeyIsKeyDown(void);
 static uint8_t KeyDecode(void);
-static void KeyBufIn(uint8_t code);
+
+//static void KeyBufIn(uint8_t code);
+static void KeyBufIn(KEY* Key, uint8_t code);
+
 
 
 static void KeySelRow(uint8_t row)
@@ -150,40 +174,43 @@ static uint8_t KeyDecode(void)
 }
 
 
-static void KeyBufIn(uint8_t code)
+//static void KeyBufIn(uint8_t code)
+static void KeyBufIn(KEY* Key, uint8_t code)
 {
-    if( KeyNRead < KEY_BUF_SIZE )
+    if( Key->NRead < KEY_BUF_SIZE )
     {
-        KeyNRead++;
-        KeyBuf[KeyBufInIx++] = code;
-        if( KeyBufInIx >= KEY_BUF_SIZE )
+        Key->NRead++;
+        Key->Buf[Key->BufInIx++] = code;
+        if( Key->BufInIx >= KEY_BUF_SIZE )
         {
-            KeyBufInIx = 0;
+            Key->BufInIx = 0;
         }
     }
 }
 
-bool KeyHit(void)
+//bool KeyHit(void)
+bool KeyHit(KEY* Key)
 {
     bool hit;
 
-    hit = (bool)(KeyNRead > 0) ? TRUE : FALSE;
+    hit = (bool)(Key->NRead > 0) ? TRUE : FALSE;
 
     return hit;
 }
 
-uint8_t KeyGetKey(void)
+//uint8_t KeyGetKey(void)
+uint8_t KeyGetKey(KEY* Key)
 {
     uint8_t code;
 
-    if( KeyNRead > 0 )
+    if( Key->NRead > 0 )
     {
-        KeyNRead--;
-        code = KeyBuf[KeyBufOutIx];
-        KeyBufOutIx++;
-        if( KeyBufOutIx >= KEY_BUF_SIZE )
+        Key->NRead--;
+        code = Key->Buf[Key->BufOutIx];
+        Key->BufOutIx++;
+        if( Key->BufOutIx >= KEY_BUF_SIZE )
         {
-            KeyBufOutIx = 0;
+            Key->BufOutIx = 0;
         }
 
         return code;
@@ -194,25 +221,27 @@ uint8_t KeyGetKey(void)
     }
 }
 
-void KeyInit(void)
+//void KeyInit(void)
+void KeyInit(KEY* Key)
 {
     KeySelRow(KEY_ALL_ROWS);
-    KeyScanState = KEY_STATE_UP;
-    KeyNRead = 0;
-    KeyBufInIx = 0;
-    KeyBufOutIx = 0;
+    Key->ScanState = KEY_STATE_UP;
+    Key->NRead = 0;
+    Key->BufInIx = 0;
+    Key->BufOutIx = 0;
 }
 
-void KeyScanTask(void)
+//void KeyScanTask(void)
+void KeyScanTask(KEY* Key)
 {
     uint8_t code;
 
-    switch( KeyScanState )
+    switch( Key->ScanState )
     {
         case KEY_STATE_UP:
             if( KeyIsKeyDown() )
             {
-                KeyScanState = KEY_STATE_DEBOUNCE;
+                Key->ScanState = KEY_STATE_DEBOUNCE;
             }
             break;
 
@@ -221,38 +250,38 @@ void KeyScanTask(void)
             {
                 //KeyBufIn(1);    // 1: stored key code
                 code = KeyDecode();
-                KeyBufIn(code);
+                KeyBufIn(Key,code);
 
-                KeyRptStartDlyCtr = KEY_RPT_START_DLY;
-                KeyScanState = KEY_STATE_RPT_START_DLY;
+                Key->RptStartDlyCtr = KEY_RPT_START_DLY;
+                Key->ScanState = KEY_STATE_RPT_START_DLY;
             }
             else
             {
                 KeySelRow(KEY_ALL_ROWS);
-                KeyScanState = KEY_STATE_UP;
+                Key->ScanState = KEY_STATE_UP;
             }
             break;
 
         case KEY_STATE_RPT_START_DLY:
             if( KeyIsKeyDown() )
             {
-                if( KeyRptStartDlyCtr > 0)
+                if( Key->RptStartDlyCtr > 0)
                 {
-                    KeyRptStartDlyCtr--;
-                    if( KeyRptStartDlyCtr == 0)
+                    Key->RptStartDlyCtr--;
+                    if( Key->RptStartDlyCtr == 0)
                     {
                         //KeyBufIn(1);
                         code = KeyDecode();
-                        KeyBufIn(code);
+                        KeyBufIn(Key, code);
 
-                        KeyRptDlyCtr = KEY_RPT_DLY;
-                        KeyScanState = KEY_STATE_RPT_DLY;
+                        Key->RptDlyCtr = KEY_RPT_DLY;
+                        Key->ScanState = KEY_STATE_RPT_DLY;
                     }
                 }
             }
             else
             {
-                KeyScanState = KEY_STATE_DEBOUNCE;
+                Key->ScanState = KEY_STATE_DEBOUNCE;
             }
             break;
 
@@ -260,22 +289,22 @@ void KeyScanTask(void)
             //if( HAL_GPIO_ReadPin(KEY_PORT, KEY_PORT_PIN) == GPIO_PIN_RESET )
             if( KeyIsKeyDown() )
             {
-                if( KeyRptDlyCtr > 0)
+                if( Key->RptDlyCtr > 0)
                 {
-                    KeyRptDlyCtr--;
-                    if( KeyRptStartDlyCtr == 0)
+                    Key->RptDlyCtr--;
+                    if( Key->RptStartDlyCtr == 0)
                     {
                         //KeyBufIn(1);
                         code = KeyDecode();
-                        KeyBufIn(code);
+                        KeyBufIn(Key, code);
 
-                        KeyRptDlyCtr = KEY_RPT_DLY;
+                        Key->RptDlyCtr = KEY_RPT_DLY;
                     }
                 }
             }
             else
             {
-                KeyScanState = KEY_STATE_DEBOUNCE;
+                Key->ScanState = KEY_STATE_DEBOUNCE;
             }
             break;
     }

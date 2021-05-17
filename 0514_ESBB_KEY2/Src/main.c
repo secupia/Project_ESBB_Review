@@ -94,6 +94,9 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   uint8_t key = 0;
+
+  KEY stKey;
+  KEY* Key = &stKey ;
   /* USER CODE END 1 */
   
 
@@ -120,7 +123,14 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim1);
 
-  KeyInit();
+  //KeyInit(&Key);
+  KeyInit(Key);
+
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);    // LED1 OFF
+  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);    // LED2 OFF
+  HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);    // LED3 OFF
+  HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, GPIO_PIN_SET);    // LED4 OFF
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -130,24 +140,49 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-      __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_UPDATE);
-      if ( KeyScanFlag == SET)                            /* start critical section */
+      __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_UPDATE);        /*** start critical section ***/
+      if ( KeyScanFlag == SET)
       {
           KeyScanFlag = RESET;
-          __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);     /* end critical section */
-          KeyScanTask();
+          __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);     /*** end critical section ***/
+          //KeyScanTask();
+          //KeyScanTask(&Key);
+          KeyScanTask(Key);
       }
-      __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);         /* end critical section */
+      __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);         /*** end critical section ***/
 
-      if( KeyHit() )
+      //if( KeyHit() )
+      //if( KeyHit(&Key) )
+      if( KeyHit(Key) )
       {
-#if 0
-          if( KeyGetKey() == 1 )
+
+          //key = KeyGetKey();
+          //key = KeyGetKey(&Key);
+          key = KeyGetKey(Key);
+
+          switch(key)
           {
-              HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+              case 0:
+              case 4:
+              case 8:
+                  HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
+                  break;
+              case 1:
+              case 5:
+              case 9:
+                  HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+                  break;
+              case 2:
+              case 6:
+              case 10:
+                  HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+                  break;
+              case 3:
+              case 7:
+              case 11:
+                  HAL_GPIO_TogglePin(LED4_GPIO_Port, LED4_Pin);
+                  break;
           }
-#endif
-          key = KeyGetKey();
           printf("KEY : %d \r\n", key);
       }
   }
@@ -286,7 +321,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, KEY_ROW1_Pin|KEY_ROW2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, LED1_Pin|LED2_Pin|LED3_Pin|LED4_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : KEY_ROW1_Pin KEY_ROW2_Pin */
   GPIO_InitStruct.Pin = KEY_ROW1_Pin|KEY_ROW2_Pin;
@@ -313,12 +348,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(KEY2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LED1_Pin */
-  GPIO_InitStruct.Pin = LED1_Pin;
+  /*Configure GPIO pins : LED1_Pin LED2_Pin LED3_Pin LED4_Pin */
+  GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin|LED3_Pin|LED4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
