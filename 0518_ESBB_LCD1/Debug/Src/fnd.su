@@ -1,0 +1,4 @@
+fnd.c:146:13:DispOutSeg	8	static
+fnd.c:176:6:DispInit	0	static
+fnd.c:183:6:DispMuxHandler	16	static
+fnd.c:200:6:DispStr	12	static
