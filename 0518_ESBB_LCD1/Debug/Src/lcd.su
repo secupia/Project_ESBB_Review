@@ -1,0 +1,3 @@
+lcd.c:37:13:LCD_DispDataWr	8	static
+lcd.c:87:6:LCD_DispInit	8	static
+lcd.c:113:6:LCD_DispString	16	static

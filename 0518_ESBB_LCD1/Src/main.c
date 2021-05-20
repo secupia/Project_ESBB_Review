@@ -28,6 +28,7 @@
 #include "led.h"
 #include "key.h"
 #include "fnd.h"
+#include "lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -151,6 +152,8 @@ int main(void)
   //DispInit();
   DispInit(&Disp);
 
+  LCD_DispInit();
+  LCD_DispString(0, 5, "Key Code");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -228,6 +231,8 @@ int main(void)
       }
       //DispStr(0, dispString);
       DispStr(&Disp, 0, dispString);
+
+      LCD_DispString(0, 0, dispString);
 #else
       DispStr(&Disp, 0, "abcd");
 #endif
@@ -365,7 +370,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, FND_F_Pin|KEY_ROW1_Pin|KEY_ROW2_Pin|FND_G_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, FND_F_Pin|KEY_ROW1_Pin|KEY_ROW2_Pin|CLCD_D0_Pin 
+                          |CLCD_D1_Pin|CLCD_D2_Pin|CLCD_D3_Pin|CLCD_D4_Pin 
+                          |CLCD_D5_Pin|CLCD_D6_Pin|CLCD_D7_Pin|CLCD_EN_Pin 
+                          |CLCD_RW_Pin|CLCD_RS_Pin|FND_G_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, FND_A_Pin|FND_B_Pin|FND_C_Pin|FND_D_Pin 
@@ -376,8 +384,14 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, FND_E_Pin|LED1_Pin|LED2_Pin|LED3_Pin 
                           |LED4_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : FND_F_Pin KEY_ROW1_Pin KEY_ROW2_Pin FND_G_Pin */
-  GPIO_InitStruct.Pin = FND_F_Pin|KEY_ROW1_Pin|KEY_ROW2_Pin|FND_G_Pin;
+  /*Configure GPIO pins : FND_F_Pin KEY_ROW1_Pin KEY_ROW2_Pin CLCD_D0_Pin 
+                           CLCD_D1_Pin CLCD_D2_Pin CLCD_D3_Pin CLCD_D4_Pin 
+                           CLCD_D5_Pin CLCD_D6_Pin CLCD_D7_Pin CLCD_EN_Pin 
+                           CLCD_RW_Pin CLCD_RS_Pin FND_G_Pin */
+  GPIO_InitStruct.Pin = FND_F_Pin|KEY_ROW1_Pin|KEY_ROW2_Pin|CLCD_D0_Pin 
+                          |CLCD_D1_Pin|CLCD_D2_Pin|CLCD_D3_Pin|CLCD_D4_Pin 
+                          |CLCD_D5_Pin|CLCD_D6_Pin|CLCD_D7_Pin|CLCD_EN_Pin 
+                          |CLCD_RW_Pin|CLCD_RS_Pin|FND_G_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

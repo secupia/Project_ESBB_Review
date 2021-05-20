@@ -1,0 +1,5 @@
+tmr.c:12:6:TmrInit	0	static
+tmr.c:27:6:TmrSetT	0	static
+tmr.c:37:6:TmrCfgFnct	0	static
+tmr.c:46:6:TmrStart	0	static
+tmr.c:54:6:TmrTask	16	static
