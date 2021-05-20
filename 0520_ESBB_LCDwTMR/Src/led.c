@@ -9,7 +9,7 @@
 #include "led.h"
 #include "tmr.h"
 
-void OnLed(void)
+void OnLed(void* data)
 {
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);    // Low -> LED On
 
@@ -19,7 +19,7 @@ void OnLed(void)
 
 }
 
-void OffLed(void)
+void OffLed(void* data)
 {
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);     // High -> LED Off
 

@@ -9,6 +9,8 @@
 #include "tmr.h"
 #include "key.h"
 
+TMR TmrTbl[TMR_MAX_TMR];
+
 void TmrInit(TMR* ptmr)
 {
 

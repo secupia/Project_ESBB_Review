@@ -73,7 +73,7 @@ uint8_t  DispScanFlag = RESET;
 
 DISP Disp;    // GLobal variable
 
-TMR TmrTbl[TMR_MAX_TMR];
+//TMR TmrTbl[TMR_MAX_TMR];
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
@@ -157,15 +157,18 @@ int main(void)
   //DispInit();
   DispInit(&Disp);
 
-  LCD_DispInit();
-  LCD_DispString(0, 5, "Key Code");
-
   TmrInit(TmrTbl);
 
+  LCD_DispInit();
+  //LCD_DispString(0, 5, "Key Code");
+  LCD_DispString(0, 0, "STM32F103");
+
+
+#if 0
   TmrSetT(TmrTbl, 0, 1000);
   TmrCfgFnct(TmrTbl, 0, OnLed, NULL);
   TmrStart(TmrTbl,0);
-
+#endif
 
   /* USER CODE END 2 */
 
@@ -220,6 +223,17 @@ int main(void)
                   break;
           }
           printf("KEY : %d \r\n", key);
+
+          if(key >= 10){
+              dispString[2] = key / 10 + 0x30;
+              dispString[3] = key % 10 + 0x30;
+          }
+          else {
+              dispString[2] = 0x20;          // 0x20: Space
+              dispString[3] = key + 0x30;    // ASCII Code of '0' : 0x30
+          }
+          DispStr(&Disp, 0, dispString);
+          LCD_DispString(1, 0, dispString);
       }
 #if 0
       __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_UPDATE);
@@ -233,7 +247,7 @@ int main(void)
       __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
 #endif
 
-#if 1
+#if 0
       if(key >= 10){
           dispString[2] = key / 10 + 0x30;
           dispString[3] = key % 10 + 0x30;
@@ -242,11 +256,10 @@ int main(void)
           dispString[2] = 0x20;          // 0x20: Space
           dispString[3] = key + 0x30;    // ASCII Code of '0' : 0x30
       }
-      //DispStr(0, dispString);
       DispStr(&Disp, 0, dispString);
+#endif
 
-      LCD_DispString(0, 0, dispString);
-#else
+#if 0
       DispStr(&Disp, 0, "abcd");
 #endif
 
